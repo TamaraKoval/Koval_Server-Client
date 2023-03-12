@@ -8,22 +8,31 @@ import java.net.Socket;
 public class Server {
 
     public static void main(String[] args) {
+        String startPointer = "???";
 
         try (ServerSocket serverSocket = new ServerSocket(8086)) {
-            System.out.println("Сервер работает!=) Добро пожаловать");
+            System.out.println("Сервер работает!=) Игра началась");
 
             while(true) {
                 try (Socket clientSocket = serverSocket.accept();
                      PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                      BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
 
-                    System.out.println("Установлено новое соединение\n");
+                    System.out.println("Установлено новое соединение");
+
+                    out.println(startPointer);
                     String message = in.readLine();
-                    System.out.println("Принятое сообщение: " + message);
-                    System.out.println("Номер порта, с которого пришло сообщение: " + clientSocket.getPort());
-
-
-                    out.println("Привет! я тебя спалил хаха! номер твоего порта: " + clientSocket.getPort());
+                    if (startPointer.equals("???")) {
+                        out.println("ОК");
+                        startPointer = message;
+                    } else {
+                        if (startPointer.charAt(startPointer.length()-1) == Character.toLowerCase(message.charAt(0))) {
+                            out.println("ОК");
+                            startPointer = message;
+                        } else {
+                            out.println("NOT ОК, You lose");
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
